@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title">Enter the condition</string>
+    <string name="action_settings">Settings</string>
+    <string name="app_name">Application</string>
+    <string name="button_title">Найти</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_editor">Editor</string>
+    <string name="title_open">Display</string>
+    <string name="title_resources">Resources</string>
+    <string name="hint_editor_textview">Enter a condition</string>
+    <string name="lab1">Lab 1</string>
+    <string name="lab2">Lab 2</string>
+    <string name="lab3">Lab 3</string>
+</resources>

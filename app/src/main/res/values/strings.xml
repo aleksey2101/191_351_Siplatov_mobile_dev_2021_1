@@ -1,0 +1,34 @@
+<resources>
+
+    <string name="API_KEY" translatable="false">pdct.1.1.20180827T032244Z.226fc5dd46db0c9e.423536c9bde44d19bcd5f8f70d7bcecbb395ab0b</string>
+
+    <string name="app_name">Приложение</string>
+    <string name="title">Введите условие: </string>
+    <string name="action_settings">Настройки</string>
+    <string name="title_activity_settings" translatable="false">SettingsActivity</string>
+    <!--
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="tab_text_3">Tab 3</string>
+    -->
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- Strings related to Settings -->
+    <!-- Example General settings -->
+
+    <!-- Example settings for Data & Sync -->
+
+    <!-- Example settings for Notifications -->
+
+    <string name="button_title">Найти</string>
+    <string name="title_editor">Редактор</string>
+    <string name="title_open">Отображение</string>
+    <string name="title_resources">Ресурсы</string>
+    <string name="lab1">Лаб 1</string>
+    <string name="lab2">Лаб 2</string>
+    <string name="lab3">Лаб 3</string>
+    <string name="hint_editor_textview">Введите условие</string>
+    <string name="title_google" translatable="false">Google</string>
+    <string name="title_yandex" translatable="false">Yandex</string>
+</resources>
