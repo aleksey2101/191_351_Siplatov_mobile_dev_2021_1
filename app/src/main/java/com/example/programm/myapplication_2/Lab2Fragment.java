@@ -53,8 +53,6 @@ public class Lab2Fragment extends Fragment {
 
         videoView = rootView.findViewById(R.id.videoView);
         seekBar = rootView.findViewById(R.id.videoSeekBar);
-//      установите свой путь к файлу на SD-карточке
-//      String videoSource ="/sdcard/Movies/cat.3gp";
 //        Uri myVideoUri= Uri.parse( "http://techslides.com/demos/samples/sample.mp4");
 //        videoView.setVideoURI(myVideoUri);
         String PkgName = BuildConfig.APPLICATION_ID;
@@ -64,7 +62,6 @@ public class Lab2Fragment extends Fragment {
 
         Log.i(TAG, "myVideoUri: "+myVideoUri);
         videoView.setVideoURI(myVideoUri);
-//        videoView.setVideoPath("testVideo.mp4");
         MediaController mediaController = new MediaController(getActivity());
         videoView.setMediaController(mediaController);
         mediaController.show();
@@ -76,7 +73,6 @@ public class Lab2Fragment extends Fragment {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                videoView.start();
                 if (!isPlaying) {
                     videoView.seekTo(stopPosition);
                     Log.i(TAG, "start, stopPosition: "+stopPosition);
@@ -97,6 +93,9 @@ public class Lab2Fragment extends Fragment {
             public void onClick(View v) {
                 videoView.stopPlayback();
                 videoView.resume();
+                stopPosition = videoView.getCurrentPosition();
+                isPlaying = false;
+                Log.i(TAG, "stop, stopPosition: "+stopPosition);
             }
         });
 
@@ -149,7 +148,6 @@ public class Lab2Fragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-//                volumeBar.setVisibility(View.GONE);
             }
         });
 
@@ -173,6 +171,9 @@ public class Lab2Fragment extends Fragment {
             seekBar.postDelayed(onEverySecond, 100);
 //            }
 
+            //здесь же будем обновлять громкость на seekBar
+            volumeLevel = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            volumeBar.setProgress(volumeLevel);
         }
     };
 
