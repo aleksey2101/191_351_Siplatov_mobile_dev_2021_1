@@ -14,4 +14,8 @@
     <string name="lab1">Lab 1</string>
     <string name="lab2">Lab 2</string>
     <string name="lab3">Lab 3</string>
+    <string name="playpausetext">Play/Pause</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="text_volume">Volume</string>
 </resources>

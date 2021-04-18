@@ -31,4 +31,8 @@
     <string name="hint_editor_textview">Введите условие</string>
     <string name="title_google" translatable="false">Google</string>
     <string name="title_yandex" translatable="false">Yandex</string>
+    <string name="playpausetext">Играть/Пауза</string>
+    <string name="pause">Пауза</string>
+    <string name="stop">Стоп</string>
+    <string name="text_volume">Громкость</string>
 </resources>

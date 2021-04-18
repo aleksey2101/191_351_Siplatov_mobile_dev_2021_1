@@ -175,17 +175,19 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position){
                 case 0: return Lab1Fragment.newInstance();
-                case 1: return EditorFragment.newInstance();
-                case 2: return ChooseFragment.newInstance();
-                case 3: return OpenFragment.newInstance();
+                case 1: return Lab2Fragment.newInstance();
+                case 2: return Lab3Fragment.newInstance();
+                case 3: return EditorFragment.newInstance();
+                case 4: return ChooseFragment.newInstance();
+                case 5: return OpenFragment.newInstance();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 5 total pages.
+            return 6;
         }
     }
 
@@ -379,11 +381,13 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
     }
 
     void setCurrentItemChooseFragment(){
-        mViewPager.setCurrentItem(1);
+//        mViewPager.setCurrentItem(1);
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-2);
     }
 
     void setCurrentItemOpenFragment(){
-        mViewPager.setCurrentItem(2);
+//        mViewPager.setCurrentItem(2);
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-1);
     }
 
 
