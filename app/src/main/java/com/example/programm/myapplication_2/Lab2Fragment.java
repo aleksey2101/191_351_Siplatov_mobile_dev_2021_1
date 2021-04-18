@@ -162,7 +162,7 @@ public class Lab2Fragment extends Fragment {
 
             if(seekBar != null) {
 
-                Log.i(TAG, "run onEverySec, videoView.getCurrentPosition(): " + videoView.getCurrentPosition());
+//                Log.i(TAG, "run onEverySec, videoView.getCurrentPosition(): " + videoView.getCurrentPosition());
                 seekBar.setProgress(videoView.getCurrentPosition());
             }
 
