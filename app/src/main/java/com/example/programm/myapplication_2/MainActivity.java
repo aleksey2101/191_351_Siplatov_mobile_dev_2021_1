@@ -33,6 +33,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Objects;
 
 import static com.example.programm.myapplication_2.OpenFragment.setWebView;
 
@@ -180,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
                 case 3: return EditorFragment.newInstance();
                 case 4: return ChooseFragment.newInstance();
                 case 5: return OpenFragment.newInstance();
+                case 6: return Lab4Fragment.newInstance();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -187,7 +189,16 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
         @Override
         public int getCount() {
             // Show 5 total pages.
-            return 6;
+            return 7;
+        }
+
+        int getOpenFragment() {
+            // Show 5 total pages.
+            return 5;
+        }
+
+        int getChooseFragment(){
+            return 4;
         }
     }
 
@@ -373,21 +384,16 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
 
     }
 
-    private void OpenWebActivity(String result) {
-
-        Intent intentweb = new Intent(MainActivity.this, Main2ActivityWebView.class);
-        intentweb.putExtra("UrlForWebView",result );
-        startActivity(intentweb);
-    }
-
     void setCurrentItemChooseFragment(){
 //        mViewPager.setCurrentItem(1);
-        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-2);
+//        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-2);
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getChooseFragment());
     }
 
     void setCurrentItemOpenFragment(){
 //        mViewPager.setCurrentItem(2);
-        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-1);
+//        mViewPager.setCurrentItem(mSectionsPagerAdapter.getCount()-1);
+        mViewPager.setCurrentItem(mSectionsPagerAdapter.getOpenFragment());
     }
 
 
@@ -433,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
     }
 
     void hideActionBar(){
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
 }

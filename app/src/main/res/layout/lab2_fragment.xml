@@ -23,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
+        android:orientation="vertical"
         android:text="@string/playpausetext"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -40,6 +41,46 @@
         app:layout_constraintLeft_toRightOf="@id/playButton"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/videoView" />
+
+    <Button
+        android:id="@+id/btnTakePicture"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:text="@string/take_picture"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/videoSeekBar"
+        app:layout_constraintEnd_toStartOf="@+id/btnStartRecord"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cameraView"></Button>
+
+    <Button
+        android:id="@+id/btnStartRecord"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/btnTakePicture"
+        android:layout_marginEnd="20dp"
+        android:layout_toRightOf="@id/btnTakePicture"
+        android:text="@string/start_record"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/videoSeekBar"
+        app:layout_constraintEnd_toStartOf="@+id/btnStopRecord"
+        app:layout_constraintTop_toBottomOf="@+id/cameraView"></Button>
+
+    <Button
+        android:id="@+id/btnStopRecord"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/btnStartRecord"
+        android:layout_marginEnd="20dp"
+        android:layout_toRightOf="@id/btnStartRecord"
+        android:text="@string/stop_record"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/videoSeekBar"
+        app:layout_constraintEnd_toEndOf="@+id/stopButton"
+        app:layout_constraintTop_toBottomOf="@+id/cameraView"></Button>
 
     <SeekBar
         android:id="@+id/videoSeekBar"
@@ -77,16 +118,57 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="23dp"
+        android:layout_marginTop="20dp"
         android:text="@string/text_volume"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/videoRadioBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/VideoRadioBtn"
+            android:layout_marginStart="24dp"
+            android:layout_weight="1"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/cameraRadioBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_weight="1"
+            android:text="@string/CameraRadioBtn" />
+    </RadioGroup>
+
+    <SurfaceView
+        android:id="@+id/cameraView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="20dp"
+        android:maxHeight="300dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/stopButton"
+        app:layout_constraintEnd_toEndOf="@+id/videoView"
+        app:layout_constraintStart_toStartOf="@+id/videoView"
+        app:layout_constraintTop_toBottomOf="@+id/volumeBar" />
 
 </android.support.constraint.ConstraintLayout>

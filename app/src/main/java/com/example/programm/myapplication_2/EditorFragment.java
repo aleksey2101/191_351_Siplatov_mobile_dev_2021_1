@@ -181,7 +181,7 @@ public class EditorFragment extends Fragment  {
             }
         });
 
-        //ывшая кнопка камеры
+        //бывшая кнопка камеры
 //        ImageButton cameraButton=(ImageButton) rootView.findViewById(R.id.imageButton2);
 //        cameraButton.setOnClickListener(new View.OnClickListener() {
 //            public void onClick(View v) {

@@ -18,4 +18,12 @@
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
     <string name="text_volume">Volume</string>
+    <string name="take_picture">Picture</string>
+    <string name="start_record">Start</string>
+    <string name="stop_record">Stop</string>
+    <string name="VideoRadioBtn">Video</string>
+    <string name="lab4">Lab 4</string>
+    <string name="lab5">Lab 5</string>
+    <string name="lab6">Lab 6</string>
+    <string name="CameraRadioBtn">Camera</string>
 </resources>
