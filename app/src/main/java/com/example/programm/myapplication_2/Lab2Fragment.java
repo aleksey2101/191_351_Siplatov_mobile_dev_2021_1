@@ -3,6 +3,7 @@ package com.example.programm.myapplication_2;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.CamcorderProfile;
@@ -33,16 +34,17 @@ import android.hardware.Camera.PictureCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Objects;
 
 import static android.content.Context.AUDIO_SERVICE;
 import static com.example.programm.myapplication_2.MainActivity.TAG;
 
-public class Lab2Fragment extends Fragment {
+public class Lab2Fragment extends Fragment implements SurfaceHolder.Callback{
 
-    public static Lab2Fragment newInstance() {
-        return new Lab2Fragment();
-    }
+//    public static Lab2Fragment newInstance() {
+//        return new Lab2Fragment();
+//    }
     View rootView;
     VideoView videoView;
 //    SurfaceView cameraView;
@@ -379,7 +381,7 @@ public void onActivityCreated (Bundle savedInstanceState) {
     }
 
     private boolean prepareVideoRecorder() {
-    try{
+//    try{
         camera.unlock();
 
         mediaRecorder = new MediaRecorder();
@@ -395,14 +397,14 @@ public void onActivityCreated (Bundle savedInstanceState) {
 //        mediaRecorder.setProfile(CamcorderProfile
 //                .get(CamcorderProfile.QUALITY_480P));
 
-        CamcorderProfile profile =CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA);
+        CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_QVGA);
 
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
 //        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
 //        mediaRecorder.setVideoSize(640,480); /// video size make dynamic based on the requirement or view size
         mediaRecorder.setVideoFrameRate(profile.videoFrameRate); /// from profile
-        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.MPEG_4_SP);
+        mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.DEFAULT);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
 
         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
@@ -410,18 +412,19 @@ public void onActivityCreated (Bundle savedInstanceState) {
 
 
 
-    } catch (IllegalStateException e)
-
-    {
-        e.printStackTrace();
-        Log.e(TAG, e.getMessage());
-        return false;
-    }
+//    } catch (IllegalStateException e)
+//
+//    {
+//        e.printStackTrace();
+//        Log.e(TAG, e.getMessage());
+//        return false;
+//    }
         try {
             mediaRecorder.prepare();
         } catch (Exception e) {
+            Log.e("myTag1", e.getMessage());
             e.printStackTrace();
-            releaseMediaRecorder();
+//            releaseMediaRecorder();
             return false;
         }
         return true;
@@ -467,5 +470,64 @@ public void onActivityCreated (Bundle savedInstanceState) {
         });
     }
 
+    @Override
+    public void surfaceCreated(SurfaceHolder holder)
+    {
+        try
+        {
+            camera.setPreviewDisplay(holder);
+//            camera.setPreviewCallback(this);
+            camera.setPreviewCallback((Camera.PreviewCallback) this);
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        Camera.Size previewSize = camera.getParameters().getPreviewSize();
+        float aspect = (float) previewSize.width / previewSize.height;
+
+        int previewSurfaceWidth = surfaceView.getWidth();
+        int previewSurfaceHeight = surfaceView.getHeight();
+
+        ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+
+        // здесь корректируем размер отображаемого preview, чтобы не было искажений
+
+        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_LANDSCAPE)
+        {
+            // портретный вид
+            //todo попробовать поменять значения
+            camera.setDisplayOrientation(90);
+            lp.height = previewSurfaceHeight;
+            lp.width = (int) (previewSurfaceHeight / aspect);
+            ;
+        }
+        else
+        {
+            // ландшафтный
+            camera.setDisplayOrientation(0);
+            lp.width = previewSurfaceWidth;
+            lp.height = (int) (previewSurfaceWidth / aspect);
+        }
+
+        surfaceView.setLayoutParams(lp);
+        camera.startPreview();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+//        super.surfaceDestroyed(holder);
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
 
 }

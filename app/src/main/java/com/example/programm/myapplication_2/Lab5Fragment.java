@@ -8,16 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class Lab3Fragment extends Fragment {
+public class Lab5Fragment extends Fragment {
 
-    public static Lab3Fragment newInstance() {
-        return new Lab3Fragment();
+    public static Lab5Fragment newInstance() {
+        return new Lab5Fragment();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.lab3_fragment, container, false);
+        return inflater.inflate(R.layout.lab5_fragment, container, false);
     }
 
 }
