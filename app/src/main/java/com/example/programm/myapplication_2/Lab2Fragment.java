@@ -1,10 +1,8 @@
 package com.example.programm.myapplication_2;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
-import android.graphics.Color;
+import android.hardware.Camera;
+import android.hardware.Camera.PictureCallback;
 import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaPlayer;
@@ -15,10 +13,9 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -26,15 +23,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.VideoView;
-import android.hardware.Camera;
-import android.hardware.Camera.PictureCallback;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Objects;
 
 import static android.content.Context.AUDIO_SERVICE;
@@ -61,6 +54,7 @@ public class Lab2Fragment extends Fragment {
     SurfaceView surfaceView;
     Camera camera;
     MediaRecorder mediaRecorder;
+    final int CAMERA_ID = 0;
 
     Button btnTakePicture;
     Button btnStartRecord;
@@ -68,6 +62,9 @@ public class Lab2Fragment extends Fragment {
 
     File photoFile;
     File videoFile;
+
+
+    final boolean FULL_SCREEN = false;
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -230,6 +227,14 @@ public class Lab2Fragment extends Fragment {
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format,
                                        int width, int height) {
+                camera.stopPreview();
+                setCameraDisplayOrientation(CAMERA_ID);
+                try {
+                    camera.setPreviewDisplay(holder);
+                    camera.startPreview();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -388,4 +393,40 @@ public void onActivityCreated (Bundle savedInstanceState) {
         }
     }
 
+    void setCameraDisplayOrientation(int cameraId) {
+        // определяем насколько повернут экран от нормального положения
+        int rotation = Objects.requireNonNull(getActivity()).getWindowManager().getDefaultDisplay().getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        // получаем инфо по камере cameraId
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
+
+        // задняя камера
+        int result = 0;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+            result = ((360 - degrees) + info.orientation);
+        } else
+            // передняя камера
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                result = ((360 - degrees) - info.orientation);
+                result += 360;
+            }
+        result = result % 360;
+        camera.setDisplayOrientation(result);
+    }
 }

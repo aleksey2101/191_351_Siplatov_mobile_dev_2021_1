@@ -7,16 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".Lab2Fragment">
 
-    <!--    <Button-->
-    <!--        android:id="@+id/pauseButton"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="@string/pause"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        app:layout_constraintLeft_toRightOf="@id/playButton"-->
-    <!--        app:layout_constraintRight_toLeftOf="@id/stopButton"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/videoView" />-->
-
     <Button
         android:id="@+id/playButton"
         android:layout_width="0dp"
