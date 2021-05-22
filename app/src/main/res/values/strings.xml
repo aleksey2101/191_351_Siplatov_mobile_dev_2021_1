@@ -43,4 +43,6 @@
     <string name="lab4">Лаб 4</string>
     <string name="lab5">Лаб 5</string>
     <string name="lab6">Лаб 6</string>
+    <string name="enterVKBtnTexe">Войти с помощью VK</string>
+    <string name="vkimg">VKimg</string>
 </resources>

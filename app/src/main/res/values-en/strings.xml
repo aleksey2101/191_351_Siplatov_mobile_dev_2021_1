@@ -26,4 +26,6 @@
     <string name="lab5">Lab 5</string>
     <string name="lab6">Lab 6</string>
     <string name="CameraRadioBtn">Camera</string>
+    <string name="enterVKBtnTexe">Enter VK</string>
+    <string name="vkimg">VKimg</string>
 </resources>
