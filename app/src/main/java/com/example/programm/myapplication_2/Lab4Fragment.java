@@ -1,6 +1,5 @@
 package com.example.programm.myapplication_2;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +11,15 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
+import org.jsoup.nodes.Document;
+import org.json.JSONException;
+import org.json.JSONObject;
+//import com.example.programm.myapplication_2.OpenFragment.isActionBarClosed;
 
+import org.jsoup.Jsoup;
+
+import java.net.URLEncoder;
 import java.util.Objects;
 
 public class Lab4Fragment extends Fragment {
@@ -23,8 +30,9 @@ public class Lab4Fragment extends Fragment {
         return new Lab4Fragment();
     }
 
-    final static String TAG="myLogs";
+    final static String TAG="myLogsLab4";
     private View rootView;
+    TextView textViewLog;
 //    private OnFragmentInteractionListener mListener;
     private Bundle webViewBundle;
 
@@ -33,28 +41,31 @@ public class Lab4Fragment extends Fragment {
     }
 
 
-    boolean isActionBarClosed = false;
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        Log.d(TAG, "setUserVisibleHint is working");
-
-        Log.d(TAG, "isVisibleToUser = "+isVisibleToUser);
-
-        if(isVisibleToUser){
-            //скрываем actionbar
-            Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
-            //скрыто ли уже
-            isActionBarClosed=true;
-        }
-        else if(isActionBarClosed){
-            Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
-            isActionBarClosed=false;
-        }
-
-//        Toast toast = Toast.makeText(rootView.getContext(), "Neither does this", Toast.LENGTH_LONG);
-//        toast.show();
-    }
+//    boolean isActionBarClosed = true;
+//    @Override
+//    public void setUserVisibleHint(boolean isVisibleToUser) {
+//        super.setUserVisibleHint(isVisibleToUser);
+//        Log.d(TAG, "setUserVisibleHint is working");
+//
+//        Log.d(TAG, "isVisibleToUser = "+isVisibleToUser);
+//
+//        if(isVisibleToUser){
+////            ((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar().sta
+//            //скрываем actionbar
+//            Log.d(TAG, "Закрываем экшн бар");
+//            Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
+//            //скрыто ли уже
+//            isActionBarClosed=true;
+//        }
+//        else if(isActionBarClosed){
+//            Log.d(TAG, "Открываем экшн бар");
+//            Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
+//            isActionBarClosed=false;
+//        }
+//
+////        Toast toast = Toast.makeText(rootView.getContext(), "Neither does this", Toast.LENGTH_LONG);
+////        toast.show();
+//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +83,8 @@ public class Lab4Fragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView= inflater.inflate(R.layout.lab4_fragment, container, false);
+        textViewLog = (TextView) rootView.findViewById(R.id.textViewLog);
+
         WebView webView = rootView.findViewById(R.id.VKWebView);
 
         if (webViewBundle != null)
@@ -144,7 +157,11 @@ public class Lab4Fragment extends Fragment {
         //Log.i(TAG+" proky","onPause is working...");
     }
 
-    private static class MyWebViewClient extends WebViewClient
+    boolean authComplete = false;
+    String authToken;
+    String user_id;
+
+    private class MyWebViewClient extends WebViewClient
     {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url)
@@ -161,6 +178,73 @@ public class Lab4Fragment extends Fragment {
             activity.startActivity(intent);
             */
         }
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            Log.i(TAG,"new link: "+url);
+
+            if (url.contains("access_token=") && !authComplete) {
+                if(url.contains("#"))
+                    url = url.replace("#","?");
+                Uri uri = Uri.parse(url);
+                authToken = uri.getQueryParameter("access_token");
+                Log.i(TAG, "access_token : " + authToken);
+                user_id = uri.getQueryParameter("user_id");
+                Log.i(TAG, "user_id : " + user_id);
+                authComplete = true;
+            } else if (url.contains("error=access_denied")) {
+                Log.i(TAG, "ACCESS_DENIED_HERE");
+                authComplete = true;
+            }
+            setTextViewSurname();
+        }
     }
 
+    String versionApi = "5.89";
+
+    private void setTextViewSurname() {
+        if (authComplete && user_id != null)
+        {
+            String url = "https://api.vk.com/method/users.get?user_id="+user_id+"&v="+versionApi+"&access_token=" + authToken;
+            Log.i(TAG + " api request", url);
+//                setWebView(url);
+//                Запрос к API
+            Document doc=null;
+            String FIO="";
+            try{
+                doc = Jsoup.connect(url)
+                        //        doc = Jsoup.connect("https://www.google.ru/")
+//                            .referrer("https://vk.com/")
+//                        .userAgent("Mozilla/5.0")
+//                        .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
+//                        .ignoreContentType(true)
+                        .post();
+            } catch (Exception e)
+            {
+                Log.d(TAG+" ошибка",e.toString());
+                e.printStackTrace();
+            }
+            //text внутренняя переменная
+            String doc_body=doc.body().text();
+            FIO=parsingSurnameUsers(doc_body);
+
+            Log.d(TAG," doctext = "+doc_body);
+        }
+    }
+
+    String parsingSurnameUsers (String jsonfile) {
+
+        String FIO = "";
+        try {
+            JSONObject dataJsonObj = new JSONObject(jsonfile);
+            FIO = dataJsonObj.getJSONObject("response").getJSONArray(null).getJSONObject(0).getString("id");
+            //можно доб onprogressupdate
+
+            Log.i(TAG + " JSON FIO: ", FIO);
+        } catch (JSONException e) {
+            Log.d(TAG+" JSONExcept",e.toString());
+        }
+        return FIO;
+
+    }
 }

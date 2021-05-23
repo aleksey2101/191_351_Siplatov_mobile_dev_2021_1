@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import java.util.Objects;
 
@@ -64,7 +62,7 @@ public class OpenFragment extends Fragment {
         return fragment;
     }
 
-    boolean isActionBarClosed = false;
+    public boolean isActionBarClosed = false;
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -73,12 +71,14 @@ public class OpenFragment extends Fragment {
         Log.d(TAG, "isVisibleToUser = "+isVisibleToUser);
 
         if(isVisibleToUser){
+            Log.d(TAG, "Закрываеи экшн бар");
             //скрываем actionbar
             Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).hide();
             //скрыто ли уже
             isActionBarClosed=true;
         }
         else if(isActionBarClosed){
+            Log.d(TAG, "Открываем экшн бар");
             Objects.requireNonNull(((MainActivity) Objects.requireNonNull(getActivity())).getSupportActionBar()).show();
             isActionBarClosed=false;
         }
