@@ -37,7 +37,7 @@ import java.util.Objects;
 
 import static com.example.programm.myapplication_2.OpenFragment.setWebView;
 
-public class MainActivity extends AppCompatActivity implements EditorFragment.OnFragmentInteractionListener,ChooseFragment.OnFragmentInteractionListener,OpenFragment.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     final static String TAG="myLogs";
     //public static String GlobalStringRequest;
@@ -48,10 +48,6 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
     SharedPreferences mSettings;
     private boolean IsExternalBrowserOn;
     private String LAST_RECOGNITION_TEXT;
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        //empty
-    }
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -288,56 +284,6 @@ public class MainActivity extends AppCompatActivity implements EditorFragment.On
         }
 
     }
-
-    /*private class ThreadGoog extends AsyncTask<String, Void, String> {
-        //здесь не нужен AsyncTask
-        // Метод выполняющий запрос в фоне, в версиях выше 4 андроида, запросы в главном потоке выполнять
-        // нельзя, поэтому все что вам нужно выполнять - выносите в отдельный тред
-        private String StringRequest;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            String text = EditorFragment.readText();
-            if (text != null) {
-                StringRequest = text;
-            }
-        }
-        @Override
-        protected String doInBackground(String... arg) {
-            SiteGoogle syte1 = new SiteGoogle(StringRequest);
-            String result=syte1.getString();
-            //класс который захватывает страницу
-            return result;
-        }
-        @Override
-        protected void onPostExecute(String url) {
-            setWebView(url);
-            //открывает 3 фрагмент с веб вью
-            setCurrentItemOpenFragment();
-
-            *//*WebView webView = (WebView) findViewById(R.id.webview1);
-
-            //webView.setBackgroundColor(getResources().getColor(R.color.));
-
-            //WebSettings webSettings = webView.getSettings();
-
-            // устанавливаем Zoom control
-            //webView.getSettings().setBuiltInZoomControls(true);
-
-            //webSettings.setJavaScriptEnabled(true);
-            //скрытие всплывающего окна, но отключение рекламы на сайте
-            webView.loadUrl(result);
-            *//*
-
-            //webView.loadDataWithBaseURL(null,);
-
-            //OpenWebActivity(result);
-            Log.i("kyky","AsyncTask is going...");
-
-        }
-
-    }*/
 
     //https://yandex.ru/search/?text=123&lr=967
     //https://yandex.ru/search/?text=123
