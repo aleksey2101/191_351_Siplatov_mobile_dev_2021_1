@@ -45,4 +45,5 @@
     <string name="lab6">Лаб 6</string>
     <string name="enterVKBtnTexe">Войти с помощью VK</string>
     <string name="vkimg">VKimg</string>
+    <string name="auth_like_text">Авторизовано как: </string>
 </resources>

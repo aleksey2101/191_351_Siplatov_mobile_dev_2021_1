@@ -28,4 +28,5 @@
     <string name="CameraRadioBtn">Camera</string>
     <string name="enterVKBtnTexe">Enter VK</string>
     <string name="vkimg">VKimg</string>
+    <string name="auth_like_text">"Auth like: "</string>
 </resources>

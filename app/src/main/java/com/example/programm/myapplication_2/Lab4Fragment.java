@@ -1,6 +1,8 @@
 package com.example.programm.myapplication_2;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -18,9 +20,6 @@ import org.json.JSONObject;
 //import com.example.programm.myapplication_2.OpenFragment.isActionBarClosed;
 
 import org.jsoup.Jsoup;
-
-import java.net.URLEncoder;
-import java.util.Objects;
 
 public class Lab4Fragment extends Fragment {
 
@@ -182,7 +181,7 @@ public class Lab4Fragment extends Fragment {
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             Log.i(TAG,"new link: "+url);
-
+//            authComplete = false;
             if (url.contains("access_token=") && !authComplete) {
                 if(url.contains("#"))
                     url = url.replace("#","?");
@@ -196,55 +195,95 @@ public class Lab4Fragment extends Fragment {
                 Log.i(TAG, "ACCESS_DENIED_HERE");
                 authComplete = true;
             }
-            setTextViewSurname();
+//            setTextViewSurname();
+            new ThreadApi().execute();
         }
     }
 
-    String versionApi = "5.89";
+    /** классы для запроса по сайтам */
 
-    private void setTextViewSurname() {
-        if (authComplete && user_id != null)
-        {
-            String url = "https://api.vk.com/method/users.get?user_id="+user_id+"&v="+versionApi+"&access_token=" + authToken;
-            Log.i(TAG + " api request", url);
-//                setWebView(url);
+    public class apiUsersClass {
+        String FIO = null;
+        //ссылка на решение
+        apiUsersClass() {
+            setTextViewSurname();
+        }
+
+        String versionApi = "5.89";
+
+        private void setTextViewSurname() {
+            if (authComplete && user_id != null)
+            {
+                String url = "https://api.vk.com/method/users.get?user_id="+user_id+"&v="+versionApi+"&access_token=" + authToken;
+                Log.i(TAG + " api request", url);
 //                Запрос к API
-            Document doc=null;
-            String FIO="";
-            try{
-                doc = Jsoup.connect(url)
-                        //        doc = Jsoup.connect("https://www.google.ru/")
+                Document doc=null;
+                try{
+                    doc = Jsoup.connect(url)
+                            //        doc = Jsoup.connect("https://www.google.ru/")
 //                            .referrer("https://vk.com/")
 //                        .userAgent("Mozilla/5.0")
 //                        .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
-//                        .ignoreContentType(true)
-                        .post();
-            } catch (Exception e)
-            {
-                Log.d(TAG+" ошибка",e.toString());
-                e.printStackTrace();
+                        .ignoreContentType(true)
+                            .get();
+                } catch (Exception e)
+                {
+                    Log.d(TAG+" ошибка",e.toString());
+                    e.printStackTrace();
+                }
+                //text внутренняя переменная
+                String doc_body=doc.body().text();
+                Log.d(TAG," doctext = "+doc_body);
+                FIO=parsingSurnameUsers(doc_body);
             }
-            //text внутренняя переменная
-            String doc_body=doc.body().text();
-            FIO=parsingSurnameUsers(doc_body);
-
-            Log.d(TAG," doctext = "+doc_body);
         }
+
+        String parsingSurnameUsers (String jsonfile) {
+
+            String FIO = "";
+            try {
+                JSONObject dataJsonObj = new JSONObject(jsonfile);
+                JSONObject mydata = dataJsonObj.getJSONArray("response").getJSONObject(0);
+                String first_name = mydata.getString("first_name");
+                String last_name = mydata.getString("last_name");
+                FIO = last_name + " " + first_name;
+                //можно доб onprogressupdate
+
+                Log.i(TAG + " JSON FIO: ", FIO);
+            } catch (JSONException e) {
+                Log.d(TAG+" JSONExcept",e.toString());
+            }
+
+            return FIO;
+        }
+
+        String getFIO(){
+            return FIO;
+        }
+
+    }
+    //todo static
+    @SuppressLint("StaticFieldLeak")
+    private class ThreadApi extends AsyncTask<String, Void, String> {
+        private String StringRequest;
+
+        @Override
+        protected String doInBackground(String... arg) {
+            apiUsersClass syte1 = new apiUsersClass();
+            String fio=syte1.getFIO();
+            //класс который захватывает страницу
+            return fio;
+        }
+        @Override
+        protected void onPostExecute(String fio) {
+            Log.i(TAG,"onPostExecute is working");
+            if (fio!=null)
+                textViewLog.setText(getString(R.string.auth_like_text) + fio);
+            else
+                textViewLog.setText("Не авторизовано");
+        }
+
     }
 
-    String parsingSurnameUsers (String jsonfile) {
-
-        String FIO = "";
-        try {
-            JSONObject dataJsonObj = new JSONObject(jsonfile);
-            FIO = dataJsonObj.getJSONObject("response").getJSONArray(null).getJSONObject(0).getString("id");
-            //можно доб onprogressupdate
-
-            Log.i(TAG + " JSON FIO: ", FIO);
-        } catch (JSONException e) {
-            Log.d(TAG+" JSONExcept",e.toString());
-        }
-        return FIO;
-
-    }
+    String versionApi = "5.89";
 }
