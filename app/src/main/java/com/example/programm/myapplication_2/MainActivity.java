@@ -174,11 +174,11 @@ public class MainActivity extends AppCompatActivity {
                 case 0: return Lab1Fragment.newInstance();
                 case 1: return Lab2Fragment.newInstance();
 //                case 1: return Lab4Fragment.newInstance();
-                case 2: return Lab5Fragment.newInstance();
-                case 3: return EditorFragment.newInstance();
-                case 4: return ChooseFragment.newInstance();
-                case 5: return OpenFragment.newInstance();
-                case 6: return Lab4Fragment.newInstance();
+                case 2: return EditorFragment.newInstance();
+                case 3: return ChooseFragment.newInstance();
+                case 4: return OpenFragment.newInstance();
+                case 5: return Lab4Fragment.newInstance();
+                case 6: return Lab5Fragment.newInstance();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
