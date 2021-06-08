@@ -1,9 +1,12 @@
 package com.example.programm.myapplication_2;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +23,8 @@ import org.json.JSONObject;
 //import com.example.programm.myapplication_2.OpenFragment.isActionBarClosed;
 
 import org.jsoup.Jsoup;
+
+import java.util.Objects;
 
 public class Lab4Fragment extends Fragment {
 
@@ -65,6 +70,20 @@ public class Lab4Fragment extends Fragment {
 ////        Toast toast = Toast.makeText(rootView.getContext(), "Neither does this", Toast.LENGTH_LONG);
 ////        toast.show();
 //    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        устанавливаем слушатель для принятия данных с другого фрагмента
+        ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(PagerAgentViewModel.class).getMessageContainerA().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String msg) {
+//                my_value = msg;
+                Log.i(TAG, "my_value " + msg);
+            }
+        });
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -156,7 +175,7 @@ public class Lab4Fragment extends Fragment {
         //Log.i(TAG+" proky","onPause is working...");
     }
 
-    boolean authComplete = false;
+    boolean IsAuthCompleted = false;
     String authToken;
     String user_id;
 
@@ -182,25 +201,25 @@ public class Lab4Fragment extends Fragment {
             super.onPageFinished(view, url);
             Log.i(TAG,"new link: "+url);
 //            authComplete = false;
-            if (url.contains("access_token=") && !authComplete) {
+            if (url.contains("access_token=") && !IsAuthCompleted) {
                 if(url.contains("#"))
                     url = url.replace("#","?");
                 Uri uri = Uri.parse(url);
                 authToken = uri.getQueryParameter("access_token");
                 Log.i(TAG, "access_token : " + authToken);
+//                закидываем authToken для доступа в другом фрагменте
+                ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(PagerAgentViewModel.class).sendMessageToB(authToken);
                 user_id = uri.getQueryParameter("user_id");
                 Log.i(TAG, "user_id : " + user_id);
-                authComplete = true;
+                IsAuthCompleted = true;
             } else if (url.contains("error=access_denied")) {
                 Log.i(TAG, "ACCESS_DENIED_HERE");
-                authComplete = true;
+                IsAuthCompleted = true;
             }
 //            setTextViewSurname();
             new ThreadApi().execute();
         }
     }
-
-    /** классы для запроса по сайтам */
 
     public class apiUsersClass {
         String FIO = null;
@@ -212,7 +231,7 @@ public class Lab4Fragment extends Fragment {
         String versionApi = "5.89";
 
         private void setTextViewSurname() {
-            if (authComplete && user_id != null)
+            if (IsAuthCompleted && user_id != null)
             {
                 String url = "https://api.vk.com/method/users.get?user_id="+user_id+"&v="+versionApi+"&access_token=" + authToken;
                 Log.i(TAG + " api request", url);

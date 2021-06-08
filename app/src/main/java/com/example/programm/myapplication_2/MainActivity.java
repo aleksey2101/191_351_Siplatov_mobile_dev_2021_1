@@ -1,6 +1,7 @@
 package com.example.programm.myapplication_2;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean IsExternalBrowserOn;
     private String LAST_RECOGNITION_TEXT;
 
+    private PagerAgentViewModel pagerAgentViewModel;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -96,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
         }
         */
 
-
+        pagerAgentViewModel = ViewModelProviders.of(this).get(PagerAgentViewModel.class);
+        pagerAgentViewModel.init();
     }
 
     @Override
