@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -112,22 +113,21 @@ public class Lab5Fragment extends Fragment {
                 //text внутренняя переменная
                 String doc_body= Objects.requireNonNull(doc).body().text();
                 Log.d(TAG," doctext = " + doc_body);
-                FIO=parsingSurnameUsers(doc_body);
+                FIO= parsingPodcasts(doc_body);
             }
         }
 
-        String parsingSurnameUsers (String jsonfile) {
+        String parsingPodcasts(String jsonfile) {
 
             String FIO = "";
             try {
                 JSONObject dataJsonObj = new JSONObject(jsonfile);
-                JSONObject mydata = dataJsonObj.getJSONArray("response").getJSONObject(0);
-                String first_name = mydata.getString("first_name");
-                String last_name = mydata.getString("last_name");
-                FIO = last_name + " " + first_name;
-                //можно доб onprogressupdate
+                JSONArray podcasts = dataJsonObj.getJSONObject("response").getJSONArray("podcasts");
+                for (int i=0; i < podcasts.length(); i++) {
+                    Log.d(TAG+i+" obj",""+podcasts.getJSONObject(i));
+//                  Парсинг Подкаста
 
-                Log.i(TAG + " JSON FIO: ", FIO);
+                }
             } catch (JSONException e) {
                 Log.d(TAG+" JSONExcept",e.toString());
             }
@@ -164,4 +164,13 @@ public class Lab5Fragment extends Fragment {
     }
 
 
+}
+class Podcast {
+    public String url;
+    public String owner_url;
+    public String title;
+//    public String owner_url;
+//    public int age;
+//    public List<Phones> phoneNumbers;
+//    public List<Person> friends;
 }
