@@ -12,8 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +23,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Lab5Fragment extends Fragment {
@@ -31,7 +34,11 @@ public class Lab5Fragment extends Fragment {
     String searchTextPodcast;
 
     View rootView;
+    ListView listView;
     private EditText queryEditText;
+    ArrayAdapter adapter;
+
+    private ArrayList<String> podcastsList = new ArrayList<>();
 
     public static Lab5Fragment newInstance() {
         return new Lab5Fragment();
@@ -79,6 +86,10 @@ public class Lab5Fragment extends Fragment {
                 new ThreadApiPodcasts().execute();
             }
         });
+        listView = (ListView) rootView.findViewById(R.id.ListViewLab5);
+        adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
+                android.R.layout.simple_list_item_1, podcastsList);
+        listView.setAdapter(adapter);
         return rootView;
     }
 
@@ -123,10 +134,13 @@ public class Lab5Fragment extends Fragment {
             try {
                 JSONObject dataJsonObj = new JSONObject(jsonfile);
                 JSONArray podcasts = dataJsonObj.getJSONObject("response").getJSONArray("podcasts");
-                for (int i=0; i < podcasts.length(); i++) {
-                    Log.d(TAG+i+" obj",""+podcasts.getJSONObject(i));
-//                  Парсинг Подкаста
 
+                podcastsList.clear();
+                for (int i=0; i < podcasts.length(); i++) {
+                    JSONObject podcast = podcasts.getJSONObject(i);
+                    Log.d(TAG+i+" obj",""+podcast);
+//                  Парсинг Подкаста
+                    podcastsList.add(podcast.getString("title"));
                 }
             } catch (JSONException e) {
                 Log.d(TAG+" JSONExcept",e.toString());
@@ -159,6 +173,10 @@ public class Lab5Fragment extends Fragment {
 //                textViewLog.setText(getString(R.string.auth_like_text) + fio);
 //            else
 //                textViewLog.setText("Не авторизовано");
+//            ListAdapter adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
+//                    android.R.layout.simple_list_item_1, mCatNameList);
+//            listView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
 
     }
