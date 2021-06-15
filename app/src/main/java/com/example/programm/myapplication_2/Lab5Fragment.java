@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -24,6 +23,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Lab5Fragment extends Fragment {
@@ -36,9 +36,11 @@ public class Lab5Fragment extends Fragment {
     View rootView;
     ListView listView;
     private EditText queryEditText;
-    ArrayAdapter adapter;
+//    ArrayAdapter adapter;
+    CustomListAdapter adapter;
 
-    private ArrayList<String> podcastsList = new ArrayList<>();
+//    private ArrayList<String> podcastsList = new ArrayList<>();
+    List<Podcast> PodcastsList = new ArrayList<>();
 
     public static Lab5Fragment newInstance() {
         return new Lab5Fragment();
@@ -58,14 +60,14 @@ public class Lab5Fragment extends Fragment {
         ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(PagerAgentViewModel.class).getMessageContainerB().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String msg) {
-                authToken = msg;
-                Log.i(TAG, "authToken: " + msg);
+            authToken = msg;
+            Log.i(TAG, "authToken: " + msg);
 
-                if(authToken!=null && !authToken.equals("Default Message"))
-                    isAuthCompleted = true;
-                else
-                    isAuthCompleted = false;
-                Log.i(TAG, "IsAuthCompleted: " + isAuthCompleted);
+            if(authToken!=null && !authToken.equals("Default Message"))
+                isAuthCompleted = true;
+            else
+                isAuthCompleted = false;
+            Log.i(TAG, "IsAuthCompleted: " + isAuthCompleted);
             }
         });
     }
@@ -86,9 +88,25 @@ public class Lab5Fragment extends Fragment {
                 new ThreadApiPodcasts().execute();
             }
         });
+
+//        PodcastsList = getListData();
+        Podcast vietnam = new Podcast("Vietnam", "vn", "url1");
+        Podcast russia = new Podcast("Russia", "ru", "url2");
+
+
+        PodcastsList.add(vietnam);
+        PodcastsList.add(russia);
+        PodcastsList.add(russia);
         listView = (ListView) rootView.findViewById(R.id.ListViewLab5);
-        adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
-                android.R.layout.simple_list_item_1, podcastsList);
+//        adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
+//                android.R.layout.simple_list_item_1, podcastsList);
+//        listView.setAdapter(adapter);
+
+
+//        adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
+//                android.R.layout.simple_list_item_1, podcastsList);
+
+        adapter = new CustomListAdapter(getActivity(), PodcastsList);
         listView.setAdapter(adapter);
         return rootView;
     }
@@ -135,12 +153,23 @@ public class Lab5Fragment extends Fragment {
                 JSONObject dataJsonObj = new JSONObject(jsonfile);
                 JSONArray podcasts = dataJsonObj.getJSONObject("response").getJSONArray("podcasts");
 
-                podcastsList.clear();
+//                podcastsList.clear();
+                PodcastsList.clear();
+                String p_title;
+                String p_url;
+                String p_imgUrl;
                 for (int i=0; i < podcasts.length(); i++) {
                     JSONObject podcast = podcasts.getJSONObject(i);
                     Log.d(TAG+i+" obj",""+podcast);
 //                  Парсинг Подкаста
-                    podcastsList.add(podcast.getString("title"));
+                    p_title = podcast.getString("title");
+                    p_url = podcast.getString("url");
+                    JSONObject coverImg = podcast.getJSONObject("cover").getJSONArray("sizes").getJSONObject(2);
+
+                    Log.i(TAG+" coverImg",coverImg.toString());
+                    p_imgUrl = coverImg.getString("url");
+                    Log.i(TAG+" imgUrl",p_imgUrl);
+                    PodcastsList.add(new Podcast(p_title, p_imgUrl, p_url));
                 }
             } catch (JSONException e) {
                 Log.d(TAG+" JSONExcept",e.toString());
@@ -169,26 +198,28 @@ public class Lab5Fragment extends Fragment {
         @Override
         protected void onPostExecute(String fio) {
             Log.i(TAG,"onPostExecute is working");
-//            if (fio!=null)
-//                textViewLog.setText(getString(R.string.auth_like_text) + fio);
-//            else
-//                textViewLog.setText("Не авторизовано");
-//            ListAdapter adapter = new ArrayAdapter<>(Objects.requireNonNull(getActivity()),
-//                    android.R.layout.simple_list_item_1, mCatNameList);
-//            listView.setAdapter(adapter);
+
+//            Обновляем adapter для отображения
             adapter.notifyDataSetChanged();
+//            if(adapter.getCount()!=0 && adapter!=null){
+//                adapter.clear();
+//            } else
+//                adapter = new ArrayAdapter<String>();
         }
 
     }
+    private  List<Podcast> getListData() {
+        List<Podcast> PodcastsList = new ArrayList<Podcast>();
+        Podcast vietnam = new Podcast("Vietnam", "vn", "123");
+        Podcast usa = new Podcast("United States", "us", "url2");
+        Podcast russia = new Podcast("Russia", "ru", "url3");
 
 
-}
-class Podcast {
-    public String url;
-    public String owner_url;
-    public String title;
-//    public String owner_url;
-//    public int age;
-//    public List<Phones> phoneNumbers;
-//    public List<Person> friends;
+        PodcastsList.add(vietnam);
+        PodcastsList.add(usa);
+        PodcastsList.add(russia);
+
+        return PodcastsList;
+    }
+
 }
