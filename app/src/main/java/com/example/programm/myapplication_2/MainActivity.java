@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                 case 4: return OpenFragment.newInstance();
                 case 5: return Lab4Fragment.newInstance();
                 case 6: return Lab5Fragment.newInstance();
+                case 7: return Lab6Fragment.newInstance();
             }
             return PlaceholderFragment.newInstance(position + 1);
         }
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 5 total pages.
-            return 7;
+            return 8;
         }
 
         int getOpenFragment() {
