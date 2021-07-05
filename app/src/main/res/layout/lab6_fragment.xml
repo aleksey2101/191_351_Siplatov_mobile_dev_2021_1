@@ -92,7 +92,6 @@
         android:layout_marginTop="32dp"
         android:ems="10"
         android:inputType="textVisiblePassword|textPersonName|textPassword"
-        android:text="Enter Key"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -7,12 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.util.Base64;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
@@ -22,10 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -36,7 +32,6 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class Lab6Fragment extends Fragment {
@@ -48,28 +43,60 @@ public class Lab6Fragment extends Fragment {
     }
 
     View rootView;
+    TextView keyTextView;
     final static String TAG="myLogsLab6";
+    //определяем переменные для работы с файлами
+    File myPaths = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+//    Log.i(TAG + " myPaths1",myPaths.toString());
+//    Log.i(TAG + " myPaths2",myPaths.getPath());
+    File origFilepath = new File(myPaths, "input.txt");
+
+    File encFilepath = new File(myPaths, "output.txt");
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.lab6_fragment, container, false);
+        keyTextView = (TextView) rootView.findViewById(R.id.keyEditText);
+        Button encButton = rootView.findViewById(R.id.EncButton);
+        encButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, keyTextView.getText().toString());
+//                setUserKey();
+                encrypt();
+            }
+        });
 
+        Button decButton = rootView.findViewById(R.id.DecButton);
+        decButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Log.i(TAG, keyTextView.getText().toString());
+//                setUserKey();
+                decrypt();
+            }
+        });
 
-        Log.i(TAG + " myPaths1","onCreateView is started");
+        Log.i(TAG,"onCreateView is started");
 
         //попытка работа с файлом
 
-        File myPaths = Environment
-                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
 
-        Log.i(TAG + " myPaths1",myPaths.toString());
-        Log.i(TAG + " myPaths2",myPaths.getPath());
-        File origFilepath = new File(myPaths, "input.txt");
 
-        File encFilepath = new File(myPaths, "output.txt");
+        encrypt();
 
+        decrypt();
+
+        //работа со строкой
+        strEncDec();
+
+
+        return rootView;
+    }
+
+    private void encrypt() {
         // open stream to read origFilepath. We are going to save encrypted contents to outfile
         InputStream fis = null;
         File outfile = null;
@@ -108,20 +135,17 @@ public class Lab6Fragment extends Fragment {
             e.printStackTrace();
         }
 
-//        SecretKeySpec mKey = null;
-        try {
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            sr.setSeed("any data used as random seed".getBytes());
-            KeyGenerator kg = KeyGenerator.getInstance("AES");
-            kg.init(256, sr);
-            mKey = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
-            Log.i(TAG + " mKey", mKey.toString());
+//        Формируем ключ
+        if(mKey!=null)
+            Log.i(TAG + " mKey",new String(mKey.getEncoded()));
+        //Если ключ введён
+        if(!keyTextView.getText().toString().equals(""))
+            setRandomKey();
+        else
+            setUserKey();
 
-            Log.i(TAG+" kg", kg.toString());
-        } catch (Exception e) {
-            Log.i(TAG+"mKey", "AES secret key spec error");
-        }
-
+        if(mKey!=null)
+            Log.i(TAG + " mKey",new String(mKey.getEncoded()));
         try{
             encipher.init(Cipher.ENCRYPT_MODE, mKey);
             Log.i(TAG+"encodedBytes1", Arrays.toString(encipher.doFinal()));
@@ -174,7 +198,9 @@ public class Lab6Fragment extends Fragment {
             Log.i(TAG+"Crypto", "fis close IOException");
             e.printStackTrace();
         }
+    }
 
+    private void decrypt() {
         //попробуем раскодировать
         Cipher aes2 = null;
         ByteArrayOutputStream baos = null;
@@ -229,11 +255,44 @@ public class Lab6Fragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        //работа со строкой
-        strEncDec();
+    private void setRandomKey() {
+        Log.i(TAG, "setRandomKey started");
+        try {
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            sr.setSeed("any data used as random seed".getBytes());
+            KeyGenerator kg = KeyGenerator.getInstance("AES");
+            kg.init(256, sr);
+            Log.i(TAG + "rnd kBytes", new String((kg.generateKey()).getEncoded()));
+            Log.i(TAG + "rnd kBytes", Arrays.toString((kg.generateKey()).getEncoded()));
+            mKey = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
+            Log.i(TAG + " mKey", new String(mKey.getEncoded()));
+        } catch (Exception e) {
+            Log.i(TAG+"mKey", "AES secret key spec error");
+        }
+    }
 
-        return rootView;
+    private void setUserKey() {
+        Log.i(TAG, "setUserKey started");
+        String userKetStr = keyTextView.getText().toString();
+//        Ввод пользовательского ключа
+        byte[] keyBytes;
+//        keyBytes  = new byte[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
+//        String str = "abc123";
+//        str.getBytes();
+        keyBytes = userKetStr.getBytes();
+//
+//        String algorithm  = "RawBytes";
+        String algorithm  = "AES";
+//        mKey = null;
+
+        Log.i(TAG + "user kBytes", Arrays.toString(keyBytes));
+        Log.i(TAG + "user kBytes", keyBytes.toString());
+        mKey = new SecretKeySpec(keyBytes, algorithm);
+
+
+        Log.i(TAG + " mKey", new String(mKey.getEncoded()));
     }
 
     private void strEncDec() {
