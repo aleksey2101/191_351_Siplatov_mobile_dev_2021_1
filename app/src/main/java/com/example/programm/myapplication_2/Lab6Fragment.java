@@ -6,14 +6,17 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -59,6 +62,8 @@ public class Lab6Fragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.lab6_fragment, container, false);
         keyTextView = (TextView) rootView.findViewById(R.id.keyEditText);
+        //TODO добавить ограничение на длину символа в enc dec
+        //TODO в XML переприявязать элементы
         Button encButton = rootView.findViewById(R.id.EncButton);
         encButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,15 +87,16 @@ public class Lab6Fragment extends Fragment {
         Log.i(TAG,"onCreateView is started");
 
         //попытка работа с файлом
+        TextInputEditText keyTextInput = rootView.findViewById(R.id.keyTextInput);
 
 
 
-        encrypt();
+//        encrypt();
 
-        decrypt();
+//        decrypt();
 
         //работа со строкой
-        strEncDec();
+//        strEncDec();
 
 
         return rootView;
@@ -139,7 +145,7 @@ public class Lab6Fragment extends Fragment {
         if(mKey!=null)
             Log.i(TAG + " mKey",new String(mKey.getEncoded()));
         //Если ключ введён
-        if(!keyTextView.getText().toString().equals(""))
+        if(keyTextView.getText().toString().equals(""))
             setRandomKey();
         else
             setUserKey();
@@ -276,6 +282,16 @@ public class Lab6Fragment extends Fragment {
     private void setUserKey() {
         Log.i(TAG, "setUserKey started");
         String userKetStr = keyTextView.getText().toString();
+
+        Log.i(TAG+" keyLen", ""+userKetStr.length());
+        if (userKetStr.length()<32) {
+            Toast toast = Toast.makeText(rootView.getContext(),
+                    "Введите ключ длины от 32 символов",
+                    Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            return;
+        }
 //        Ввод пользовательского ключа
         byte[] keyBytes;
 //        keyBytes  = new byte[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15};
@@ -323,6 +339,7 @@ public class Lab6Fragment extends Fragment {
             Log.i(TAG+"encodedBytes2", Arrays.toString(encodedBytes));
         } catch (Exception e) {
             Log.i(TAG+"Crypto", "AES encryption error");
+            e.printStackTrace();
         }
 
         TextView encodedTextView = (TextView)rootView.findViewById(R.id.textViewEncoded);
