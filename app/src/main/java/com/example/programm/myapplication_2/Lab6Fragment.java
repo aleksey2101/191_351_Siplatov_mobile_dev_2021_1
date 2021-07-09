@@ -96,7 +96,7 @@ public class Lab6Fragment extends Fragment {
 //        decrypt();
 
         //работа со строкой
-//        strEncDec();
+        strEncDec();
 
 
         return rootView;
@@ -141,72 +141,82 @@ public class Lab6Fragment extends Fragment {
             e.printStackTrace();
         }
 
-//        Формируем ключ
+        myKeyGenerating();
+
+        if (mKey != null){
+                Log.i(TAG + " mKey", new String(mKey.getEncoded()));
+            try {
+                encipher.init(Cipher.ENCRYPT_MODE, mKey);
+                Log.i(TAG + "encodedBytes1", Arrays.toString(encipher.doFinal()));
+            } catch (Exception e) {
+                Log.i(TAG + "encipher", "AES encipher error");
+            }
+
+            CipherOutputStream cos = new CipherOutputStream(encfos, encipher);
+
+            // Считаем время на шифрование
+            long start = System.nanoTime();
+            Log.d(TAG + " start", String.valueOf(start));
+
+            int mBlockSize = 2;
+
+            byte[] block = new byte[mBlockSize];
+
+            while (true) {
+                try {
+                    if (!((read = fis.read(block, 0, mBlockSize)) != -1)) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+    //                Поблочная запись
+                    cos.write(block, 0, read);
+                } catch (IOException e) {
+                    Log.i(TAG + "Crypto", "cos write Exception");
+                    e.printStackTrace();
+                }
+            }
+
+
+            try {
+                cos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i(TAG + "Crypto", "cos close Exception");
+            }
+            long stop = System.nanoTime();
+
+            Log.d(TAG + " stop", String.valueOf(stop));
+            long seconds = (stop - start) / 1000000;// for milliseconds
+            Log.d(TAG + " seconds", String.valueOf(seconds));
+
+            try {
+                fis.close();
+            } catch (IOException e) {
+                Log.i(TAG + "Crypto", "fis close IOException");
+                e.printStackTrace();
+            }
+        }else Log.i(TAG +" enc", "mkey is null");
+    }
+
+    private void myKeyGenerating() {
+        //        Формируем ключ
         if(mKey!=null)
             Log.i(TAG + " mKey",new String(mKey.getEncoded()));
         //Если ключ введён
         if(keyTextView.getText().toString().equals(""))
             setRandomKey();
         else
-            setUserKey();
-
-        if(mKey!=null)
-            Log.i(TAG + " mKey",new String(mKey.getEncoded()));
-        try{
-            encipher.init(Cipher.ENCRYPT_MODE, mKey);
-            Log.i(TAG+"encodedBytes1", Arrays.toString(encipher.doFinal()));
-        } catch (Exception e) {
-            Log.i(TAG+"encipher", "AES encipher error");
-        }
-
-        CipherOutputStream cos = new CipherOutputStream(encfos, encipher);
-
-        // capture time it takes to encrypt file
-        long start = System.nanoTime();
-        Log.d(TAG + " start", String.valueOf(start));
-
-        int mBlockSize = 2;
-
-        byte[] block = new byte[mBlockSize];
-
-        while (true) {
-            try {
-                if (!((read = fis.read(block,0,mBlockSize)) != -1)) break;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-//                Поблочная запись
-                cos.write(block,0, read);
-            } catch (IOException e) {
-                Log.i(TAG+"Crypto", "cos write Exception");
-                e.printStackTrace();
-            }
-        }
-
-
-
-        try {
-            cos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i(TAG+"Crypto", "cos close Exception");
-        }
-        long stop = System.nanoTime();
-
-        Log.d(TAG + " stop", String.valueOf(stop));
-        long seconds = (stop - start) / 1000000;// for milliseconds
-        Log.d(TAG + " seconds", String.valueOf(seconds));
-
-        try {
-            fis.close();
-        } catch (IOException e) {
-            Log.i(TAG+"Crypto", "fis close IOException");
-            e.printStackTrace();
-        }
+            if (!setUserKey()) mKey = null;
     }
 
     private void decrypt() {
+        //TODO заново считать ключ
+        myKeyGenerating();
+        if (mKey==null){
+            Log.i(TAG +" dec", "mkey is null");
+            return;
+        }
         //попробуем раскодировать
         Cipher aes2 = null;
         ByteArrayOutputStream baos = null;
@@ -279,18 +289,18 @@ public class Lab6Fragment extends Fragment {
         }
     }
 
-    private void setUserKey() {
+    private boolean setUserKey() {
         Log.i(TAG, "setUserKey started");
         String userKetStr = keyTextView.getText().toString();
 
         Log.i(TAG+" keyLen", ""+userKetStr.length());
-        if (userKetStr.length()<32) {
+        if (userKetStr.length()!=32) {
             Toast toast = Toast.makeText(rootView.getContext(),
-                    "Введите ключ длины от 32 символов",
+                    "Введите ключ длиной 32 символа!",
                     Toast.LENGTH_SHORT);
             toast.setGravity(Gravity.CENTER, 0, 0);
             toast.show();
-            return;
+            return false;
         }
 //        Ввод пользовательского ключа
         byte[] keyBytes;
@@ -309,6 +319,7 @@ public class Lab6Fragment extends Fragment {
 
 
         Log.i(TAG + " mKey", new String(mKey.getEncoded()));
+        return true;
     }
 
     private void strEncDec() {
@@ -319,17 +330,11 @@ public class Lab6Fragment extends Fragment {
         originalTextView.setText("[ORIGINAL]:\n" + testText + "\n");
 
         // генерируем ключ
-//        SecretKeySpec sks = null;
-//        try {
-//            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-//            sr.setSeed("any data used as random seed".getBytes());
-//            KeyGenerator kg = KeyGenerator.getInstance("AES");
-//            kg.init(256, sr);
-//            sks = new SecretKeySpec((kg.generateKey()).getEncoded(), "AES");
-//        } catch (Exception e) {
-//            Log.i("Crypto", "AES secret key spec error");
-//        }
-
+        myKeyGenerating();
+        if (mKey==null){
+            Log.i(TAG +" strEncDec", "mkey is null");
+            return;
+        }
         // Encode the original data with AES
         byte[] encodedBytes = null;
         try {
