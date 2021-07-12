@@ -1,5 +1,7 @@
 package com.example.programm.myapplication_2;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -87,10 +89,58 @@ public class Lab6Fragment extends Fragment {
         Log.i(TAG,"onCreateView is started");
 
         //попытка работа с файлом
-        TextInputEditText keyTextInput = rootView.findViewById(R.id.keyTextInput);
+//        TextInputEditText keyTextInput = rootView.findViewById(R.id.keyTextInput);
 
+        Button OpenDecFileBtn = rootView.findViewById(R.id.OpenDFileBtn);
+        OpenDecFileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///mnt/sdcard/" + "file.xls"));
+                Log.i(TAG + " decPath","file://" + myPaths.getPath() + "/dec1.txt");
+                Uri selectedUri = Uri.parse( myPaths.getPath() + "/myFolder/");
+                try {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + myPaths.getPath() + "/dec1.txt"));
+//                    startActivity(intent);
 
+                    Intent myPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//                    TODO ACTION_VIEW
+//                    myPickerIntent.setType("image/*");
+                    myPickerIntent.setType("text/plain");
+                    myPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+//                    TODO
+//                    myPickerIntent.setType("*/*");
+                    startActivityForResult(myPickerIntent, 1);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
 
+        Button OpenEncFileBtn = rootView.findViewById(R.id.OpenEFileBtn);
+        OpenEncFileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///mnt/sdcard/" + "file.xls"));
+//                Log.i(TAG + " decPath","file://" + myPaths.getPath() + "/dec1.txt");
+                Uri selectedUri = Uri.parse( myPaths.getPath() + "/myFolder/");
+                try {
+//                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + myPaths.getPath() + "/dec1.txt"));
+//                    startActivity(intent);
+
+                    Intent myPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//                    myPickerIntent.setType("image/*");
+
+//                    myPickerIntent.setDataAndType(selectedUri, "resource/folder");
+                    startActivityForResult(myPickerIntent, 1);
+
+                    myPickerIntent.setType("text/plain");
+//                    myPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+//        Log.i(TAG + " myPath102", myPaths.getPath());
 //        encrypt();
 
 //        decrypt();
