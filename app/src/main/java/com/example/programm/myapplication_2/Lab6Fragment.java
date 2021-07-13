@@ -1,6 +1,7 @@
 package com.example.programm.myapplication_2;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Objects;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -96,20 +98,27 @@ public class Lab6Fragment extends Fragment {
             @Override
             public void onClick(View v) {
 //                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///mnt/sdcard/" + "file.xls"));
-                Log.i(TAG + " decPath","file://" + myPaths.getPath() + "/dec1.txt");
-                Uri selectedUri = Uri.parse( myPaths.getPath() + "/myFolder/");
+                Uri selectedUri = Uri.parse( myPaths.getPath() + "/dec1.txt");
+                Log.i(TAG + " decPath",selectedUri.getPath());
                 try {
 //                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + myPaths.getPath() + "/dec1.txt"));
 //                    startActivity(intent);
 
-                    Intent myPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
-//                    TODO ACTION_VIEW
-//                    myPickerIntent.setType("image/*");
-                    myPickerIntent.setType("text/plain");
-                    myPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
-//                    TODO
+                    Intent myPickerIntent = new Intent(Intent.ACTION_VIEW);
+//                     myPickerIntent.setDataAndType(selectedUri, "text/plain");
+                    myPickerIntent.setDataAndType(selectedUri, "application/msword");
+//                    myPickerIntent.setDataAndType(selectedUri, "/*");
+
 //                    myPickerIntent.setType("*/*");
-                    startActivityForResult(myPickerIntent, 1);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    myPickerIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION );
+                    PackageManager packageManager = getActivity().getPackageManager();
+                    if (myPickerIntent.resolveActivity(packageManager) != null) {
+                        Log.i(TAG,"dec createChooser" );
+                        getActivity().startActivity(Intent.createChooser(myPickerIntent, "Choose app to open document"));
+                    } else {
+                        startActivityForResult(myPickerIntent, 1);
+                    }
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -122,18 +131,21 @@ public class Lab6Fragment extends Fragment {
             public void onClick(View v) {
 //                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file:///mnt/sdcard/" + "file.xls"));
 //                Log.i(TAG + " decPath","file://" + myPaths.getPath() + "/dec1.txt");
-                Uri selectedUri = Uri.parse( myPaths.getPath() + "/myFolder/");
+                Uri selectedUri = Uri.parse( myPaths.getPath());
+                Log.i(TAG + " encPath",selectedUri.getPath());
                 try {
 //                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + myPaths.getPath() + "/dec1.txt"));
 //                    startActivity(intent);
 
                     Intent myPickerIntent = new Intent(Intent.ACTION_GET_CONTENT);
+//                    Intent myPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+//                    ACTION_PICK
 //                    myPickerIntent.setType("image/*");
 
-//                    myPickerIntent.setDataAndType(selectedUri, "resource/folder");
+                    myPickerIntent.setDataAndType(selectedUri, "text/plain");
+//                    myPickerIntent.setType("text/plain");
                     startActivityForResult(myPickerIntent, 1);
 
-                    myPickerIntent.setType("text/plain");
 //                    myPickerIntent.addCategory(Intent.CATEGORY_OPENABLE);
                 } catch (Exception e){
                     e.printStackTrace();
