@@ -220,7 +220,7 @@ public class Lab6Fragment extends Fragment {
             long start = System.nanoTime();
             Log.d(TAG + " start", String.valueOf(start));
 
-            int mBlockSize = 2;
+            int mBlockSize = 1024;
 
             byte[] block = new byte[mBlockSize];
 
